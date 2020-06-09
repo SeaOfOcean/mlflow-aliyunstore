@@ -15,6 +15,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'mlflow',
+        'oss2'
     ],
     entry_points={
         "mlflow.artifact_repository": [
