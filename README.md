@@ -18,7 +18,7 @@ entry_points={
 
 Install by pip on both your client and the server, and then use MLflow as normal. The Alibaba Cloud OSS artifact store support will be provided automatically.
 
-```
+```bash
 pip install mlflow[aliyun-oss]
 ```
 
@@ -28,19 +28,19 @@ It expects Aliyun Storage access credentials in the ``MLFLOW_OSS_ENDPOINT_URL``,
 so you must set these variables on both your client application and your MLflow tracking server.
 To use Aliyun OSS as an artifact store, an OSS URI of the form ``oss://<bucket>/<path>`` must be provided, as shown in the example below:
 
-.. code-block:: python
+```python
+import mlflow
+import mlflow.pyfunc
 
-        import mlflow
-        import mlflow.pyfunc
+class Mod(mlflow.pyfunc.PythonModel):
+    def predict(self, ctx, inp):
+        return 7
 
-        class Mod(mlflow.pyfunc.PythonModel):
-            def predict(self, ctx, inp):
-                return 7
-
-        exp_name = "myexp"
-        mlflow.create_experiment(exp_name, artifact_location="oss://mlflow-test/")
-        mlflow.set_experiment(exp_name)
-        mlflow.pyfunc.log_model('model_test', python_model=Mod())
+exp_name = "myexp"
+mlflow.create_experiment(exp_name, artifact_location="oss://mlflow-test/")
+mlflow.set_experiment(exp_name)
+mlflow.pyfunc.log_model('model_test', python_model=Mod())
+```
 
 In the example provided above, the ``log_model`` operation creates three entries in the OSS storage ``oss://mlflow-test/$RUN_ID/artifacts/model_test/``, the MLmodel file
 and the conda.yaml file associated with the model.
