@@ -22,4 +22,5 @@ setup(
             "oss=aliyunstoreplugin.store.artifact.aliyun_oss_artifact_repo:AliyunOssArtifactRepository"
         ]
     },
+    license="Apache License 2.0",
 )
