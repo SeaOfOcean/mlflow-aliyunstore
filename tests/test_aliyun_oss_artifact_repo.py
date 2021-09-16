@@ -1,12 +1,13 @@
 # pylint: disable=redefined-outer-name
 import os
+
 import mock
-import pytest
-
 import oss2
-
+import pytest
 from mlflow.store.artifact.artifact_repository_registry import get_artifact_repository
+
 from aliyunstoreplugin.store.artifact.aliyun_oss_artifact_repo import AliyunOssArtifactRepository
+
 
 @pytest.fixture
 def oss_bucket_mock():
@@ -57,6 +58,19 @@ def test_log_artifact(oss_bucket_mock, tmpdir):
     repo.oss_bucket.put_object_from_file.assert_called_with('some/path/test.txt', fpath)
 
 
+def test_log_artifact_real(artifact_uri, tmpdir):
+    repo = AliyunOssArtifactRepository(artifact_uri, oss_bucket_mock)
+    repo._get_oss_bucket = oss_bucket_mock
+
+    d = tmpdir.mkdir("data")
+    f = d.join("test.txt")
+    f.write("hello world!")
+    fpath = d + '/test.txt'
+    fpath = fpath.strpath
+    repo.log_artifact(fpath)
+    repo.oss_bucket.put_object_from_file.assert_called_with('some/path/test.txt', fpath)
+
+
 def test_log_artifacts(oss_bucket_mock, tmpdir):
     repo = AliyunOssArtifactRepository("oss://test_bucket/some/path", oss_bucket_mock)
     repo._get_oss_bucket = oss_bucket_mock
@@ -68,10 +82,10 @@ def test_log_artifacts(oss_bucket_mock, tmpdir):
 
     repo.log_artifacts(subd.strpath)
     repo.oss_bucket.put_object_from_file.assert_has_calls([
-                mock.call('some/path/a.txt', os.path.normpath('%s/a.txt' % subd.strpath)),
-                mock.call('some/path/b.txt', os.path.normpath('%s/b.txt' % subd.strpath)),
-                mock.call('some/path/c.txt', os.path.normpath('%s/c.txt' % subd.strpath))
-            ], any_order=True)
+        mock.call('some/path/a.txt', os.path.normpath('%s/a.txt' % subd.strpath)),
+        mock.call('some/path/b.txt', os.path.normpath('%s/b.txt' % subd.strpath)),
+        mock.call('some/path/c.txt', os.path.normpath('%s/c.txt' % subd.strpath))
+    ], any_order=True)
 
 
 def test_list_artifacts_empty(oss_bucket_mock):
@@ -87,8 +101,8 @@ def test_list_artifacts(oss_bucket_mock):
     repo._get_oss_bucket = repo.oss_bucket
     file_path = 'file'
     obj_mock = oss2.models.SimplifiedObjectInfo(
-            key=artifact_root_path + file_path,
-            last_modified='123', size=1, etag=None, type=None, storage_class=None)
+        key=artifact_root_path + file_path,
+        last_modified='123', size=1, etag=None, type=None, storage_class=None)
     dir_name = "model"
     dir_path = artifact_root_path + dir_name + "/"
 
@@ -117,8 +131,8 @@ def test_list_artifacts_with_subdir(oss_bucket_mock):
     dir_name = "model"
     file_path = dir_name + "/" + 'model.pb'
     obj_mock = oss2.models.SimplifiedObjectInfo(
-            key=artifact_root_path + file_path,
-            last_modified='123', size=1, etag=None, type=None, storage_class=None)
+        key=artifact_root_path + file_path,
+        last_modified='123', size=1, etag=None, type=None, storage_class=None)
 
     subdir_name = dir_name + "/" + 'variables'
     subdir_path = artifact_root_path + subdir_name + "/"
@@ -145,6 +159,7 @@ def test_download_file_artifact(oss_bucket_mock, tmpdir):
         fname = os.path.basename(fname)
         f = tmpdir.join(fname)
         f.write("hello world!")
+
     repo.oss_bucket.get_object_to_file.side_effect = mkfile
 
     local_file_path = repo.download_artifacts("test.txt")

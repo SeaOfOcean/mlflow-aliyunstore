@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='aliyunstoreplugin',
+    name='xk_mlflow_oss_plugin',
     version='1.0.0',
-    description='Plugin that provides Aliyun oss Artifact Store functionality for MLflow',
+    description='Plugin that provides Aliyun oss Artifact Store functionality for MLflow in Xkool',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author='Xianyan Jia',
-    author_email='jiaxianyan@gmail.com',
-    url="https://github.com/SeaOfOcean/mlflow-aliyunstore",
+    author='Liangyi Murong',
+    author_email='mrly@xkool.org',
+    url="https://github.com/mrly16/mlflow-aliyunstore",
     packages=find_packages(),
     install_requires=[
         'mlflow',
